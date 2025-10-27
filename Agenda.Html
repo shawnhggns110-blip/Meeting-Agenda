@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      margin: 30px;
+    }
+    h1, h2 {
+      text-align: center;
+      margin: 5px 0;
+    }
+    .section {
+      margin: 15px 0;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    textarea {
+      width: 95%;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #333;
+      font-family: "Times New Roman", serif;
+      resize: vertical;
+      min-height: 40px;
+      overflow: hidden;
+    }
+    input[type="date"] {
+      width: 150px;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #333;
+      font-family: "Times New Roman", serif;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 5px;
+    }
+    .checkbox-group label {
+      font-weight: normal;
+    }
+    .inline-approvals {
+      display: flex;
+      gap: 20px;
+      margin-top: 6px;
+    }
+    .inline-approvals div {
+      flex: 1;
+    }
+    .button-bar {
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    @media print {
+      .button-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div style="text-align:center; margin-bottom: 20px;">
+  <h1>Job Lodge 102</h1>
+  <h2>Durham NC</h2>
+  <h2>Meeting Agenda</h2>
+
+  <img
+    src="https://getdrawings.com/vectors/masonic-logo-vector-1.png"
+    alt="Lodge Logo"
+    width="50"
+    style="margin-top: 10px; margin-bottom: 20px;"
+  >
+
+  <form>
+    <div class="section">
+      <label for="date">Date:</label>
+      <input type="date" id="date">
+    </div>
+
+    <div class="section">
+      <label>Roll Call of Officers:</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox"> Worshipful Master</label>
+        <label><input type="checkbox"> Secretary</label>
+        <label><input type="checkbox"> Treasurer</label>
+        <label><input type="checkbox"> Senior Warden</label>
+        <label><input type="checkbox"> Junior Warden</label>
+        <label><input type="checkbox"> Senior Deacon</label>
+        <label><input type="checkbox"> Junior Deacon</label>
+        <label><input type="checkbox"> Senior Steward</label>
+        <label><input type="checkbox"> Junior Steward</label>
+        <label><input type="checkbox"> Chaplin</label>
+        <label><input type="checkbox"> Tyler</label>
+        <label><input type="checkbox"> Marshall</label>
+      </div>
+    </div>
+
+    <div class="section"><label>Visitors:</label><textarea></textarea></div>
+
+    <div class="section">
+      <label>Reading of Minutes:</label>
+      <div class="inline-approvals">
+        <div>Approved by:<br><textarea></textarea></div>
+        <div>Seconded by:<br><textarea></textarea></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <label>Treasurer's Report:</label>
+      <div class="inline-approvals">
+        <div>Approved by:<br><textarea></textarea></div>
+        <div>Seconded by:<br><textarea></textarea></div>
+      </div>
+    </div>
+
+    <div class="section"><label>Sickness and Distress:</label><textarea></textarea></div>
+    <div class="section"><label>New Petitions for Membership:</label><textarea></textarea></div>
+    <div class="section"><label>Ballot on New Petitions:</label><textarea></textarea></div>
+    <div class="section"><label>Report of Standing Committees:</label><textarea></textarea></div>
+    <div class="section"><label>Report of Special Committees:</label><textarea></textarea></div>
+    <div class="section"><label>Unfinished Business:</label><textarea></textarea></div>
+    <div class="section"><label>New Business:</label><textarea></textarea></div>
+    <div class="section"><label>Notes:</label><textarea></textarea></div>
+
+    <div class="section"><strong>Reading and Approving Bills and Correspondence</strong></div>
+    <div class="section"><strong>Reading of Current Minutes</strong></div>
+    <div class="section"><strong>Closing Ceremony</strong></div>
+  </form>
+
+  <div class="button-bar">
+  <button type="button" onclick="sendEmail()">📧 Email Agenda to Lodge</button>
+  <button type="button" onclick="saveDraft()">💾 Save Draft</button>
+  <button type="button" onclick="window.print()">🖨 Print Agenda</button>
+  <button type="button" onclick="downloadAgenda()">📥 Download Agenda</button>
+  <button type="button" onclick="viewSavedDrafts()">📂 View Saved Drafts</button>
+</div>
+<script>
+  function viewSavedDrafts() {
+    const baseUrl = "https://script.google.com/macros/s/AKfycbw-pIdxcvdrcRDTW_R-EwCexZhUQ2dteEdX4xmKkGqeZKcHDGC3NcCCEZcVROGzBPtg/exec";
+    window.open(`${baseUrl}?page=viewer`, '_blank');
+  }
+</script>
+
+
+  <script>
+    function autoGrow(el) {
+      el.style.height = "auto";
+      el.style.height = (el.scrollHeight) + "px";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const textareas = document.querySelectorAll('textarea');
+      textareas.forEach(textarea => {
+        textarea.addEventListener('input', function () {
+          autoGrow(this);
+        });
+        autoGrow(textarea);
+      });
+    });
+
+    function getCleanHtmlContent() {
+      let bodyClone = document.body.cloneNode(true);
+      bodyClone.querySelectorAll(".button-bar").forEach(el => el.remove());
+
+      bodyClone.querySelectorAll("input[type=checkbox]").forEach(el => {
+        let label = el.closest("label");
+        let text = label ? label.textContent.trim() : "";
+        let span = document.createElement("span");
+        span.textContent = (el.checked ? "☑ " : "☐ ") + text;
+        label.replaceWith(span);
+      });
+
+      bodyClone.querySelectorAll("input[type=date]").forEach(el => {
+        let span = document.createElement("span");
+        if (el.value) {
+          let d = new Date(el.value);
+          let day = String(d.getDate()).padStart(2, "0");
+          let month = String(d.getMonth() + 1).padStart(2, "0");
+          let year = d.getFullYear();
+          span.textContent = `${month}/${day}/${year}`;
+        } else {
+          span.textContent = "__________";
+        }
+        el.replaceWith(span);
+      });
+
+      bodyClone.querySelectorAll("textarea").forEach(el => {
+        let div = document.createElement("div");
+        div.style.whiteSpace = "pre-wrap";
+        div.style.borderBottom = "1px dotted #333";
+        div.textContent = el.value || "__________";
+        el.replaceWith(div);
+      });
+
+      return bodyClone.innerHTML;
+    }
+<script>
+  function viewSavedDrafts() {
+    google.script.run.withSuccessHandler(showDraftList).getSavedAgendas();
+  }
+
+  function showDraftList(agendas) {
+    if (!agendas.length) {
+      alert("❌ No saved drafts found.");
+      return;
+    }
+
+    // Create modal background
+    const modalBg = document.createElement("div");
+    modalBg.style.position = "fixed";
+    modalBg.style.top = "0";
+    modalBg.style.left = "0";
+    modalBg.style.width = "100%";
+    modalBg.style.height = "100%";
+    modalBg.style.background = "rgba(0, 0, 0, 0.4)";
+    modalBg.style.display = "flex";
+    modalBg.style.alignItems = "center";
+    modalBg.style.justifyContent = "center";
+    modalBg.style.zIndex = "1000";
+
+    // Create modal box
+    const modalBox = document.createElement("div");
+    modalBox.style.background = "#fff";
+    modalBox.style.padding = "20px";
+    modalBox.style.borderRadius = "8px";
+    modalBox.style.width = "90%";
+    modalBox.style.maxWidth = "400px";
+    modalBox.style.maxHeight = "80vh";
+    modalBox.style.overflowY = "auto";
+    modalBox.style.boxShadow = "0 4px 10px rgba(0,0,0,0.25)";
+    modalBox.innerHTML = "<h3>Select a draft to load:</h3>";
+
+    agendas.forEach((draft, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = draft.name;
+      btn.style.display = "block";
+      btn.style.margin = "10px 0";
+      btn.style.width = "100%";
+      btn.style.padding = "10px";
+      btn.style.border = "1px solid #888";
+      btn.style.borderRadius = "4px";
+      btn.style.background = "#f5f5f5";
+      btn.style.cursor = "pointer";
+      btn.onclick = () => {
+        google.script.run.withSuccessHandler(loadDraftData).loadDraftById(draft.id);
+        document.body.removeChild(modalBg);
+      };
+      modalBox.appendChild(btn);
+    });
+
+    // Close button
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.style.marginTop = "15px";
+    cancel.style.width = "100%";
+    cancel.style.padding = "10px";
+    cancel.style.border = "none";
+    cancel.style.background = "#ccc";
+    cancel.style.borderRadius = "4px";
+    cancel.style.cursor = "pointer";
+    cancel.onclick = () => document.body.removeChild(modalBg);
+    modalBox.appendChild(cancel);
+
+    modalBg.appendChild(modalBox);
+    document.body.appendChild(modalBg);
+  }
+</script>
+
+</body>
+</html>
