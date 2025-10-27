@@ -277,19 +277,17 @@
   }
 </script>
 <script>
+  <script>
   let lastSavedData = ""; // Track last saved state
 
-  // Gather all form data into a JSON string for comparison and saving
   function getFormDataJSON() {
     const formData = {};
     formData.date = document.getElementById('date').value;
 
-    // Collect checkboxes
     document.querySelectorAll('input[type=checkbox]').forEach(el => {
       formData[el.parentElement.textContent.trim()] = el.checked;
     });
 
-    // Collect textareas
     document.querySelectorAll('textarea').forEach((el, i) => {
       formData[`textarea_${i}`] = el.value;
     });
@@ -297,7 +295,6 @@
     return JSON.stringify(formData);
   }
 
-  // Auto-save logic: only triggers if something actually changed
   function autoSave() {
     const currentData = getFormDataJSON();
 
@@ -308,7 +305,6 @@
 
     lastSavedData = currentData;
 
-    // Format: AutoSave Oct_10-27_2025
     const date = new Date();
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const formattedName = `AutoSave ${monthNames[date.getMonth()]}_${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}_${date.getFullYear()}`;
@@ -325,9 +321,10 @@
       .saveDraft(formData, formattedName);
   }
 
-  // Trigger auto-save every 2 minutes (120,000 ms)
-  setInterval(autoSave, 120000);
+  // 🔁 Auto-save every 1 minute (60,000 ms)
+  setInterval(autoSave, 60000);
 </script>
+
 
 </body>
 </html>
