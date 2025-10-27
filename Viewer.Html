@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: "Times New Roman", serif; margin: 30px; }
+    h1 { text-align: center; }
+    ul { list-style: none; padding: 0; }
+    li { margin: 8px 0; }
+    a { text-decoration: none; color: #003366; }
+  </style>
+</head>
+<body>
+  <h1>📁 Saved Drafts</h1>
+  <div id="draftList">Loading drafts...</div>
+
+  <script>
+    google.script.run.withSuccessHandler(showDrafts).listDrafts();
+
+    function showDrafts(drafts) {
+      const container = document.getElementById("draftList");
+      if (!drafts.length) {
+        container.textContent = "No drafts found.";
+        return;
+      }
+
+      const ul = document.createElement("ul");
+      drafts.forEach(d => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = d.url;
+        a.target = "_blank";
+        a.textContent = `${d.name} (${d.date})`;
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      container.innerHTML = "";
+      container.appendChild(ul);
+    }
+  </script>
+</body>
+</html>
