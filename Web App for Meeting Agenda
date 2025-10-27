@@ -1,0 +1,91 @@
+// === CONFIGURATION ===
+const FOLDER_ID = '1lNPhT_Up_sJmMmavqlGS2Ra6JoTMaGnO';  // Your Drive folder ID
+const GROUP_EMAIL = 'job-lodge-102-communications@googlegroups.com';  // Lodge email
+
+// === SAVE DRAFT TO DRIVE (as JSON) ===
+function saveDraft(formData, draftName) {
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  const existingFiles = folder.getFilesByName(`${draftName}.json`);
+
+  // Delete existing file with same name
+  while (existingFiles.hasNext()) {
+    const file = existingFiles.next();
+    file.setTrashed(true);  // or file.setName(file.getName() + "_old"); to archive instead
+  }
+
+  const content = JSON.stringify(formData, null, 2);
+  const blob = Utilities.newBlob(content, MimeType.JSON, `${draftName}.json`);
+  const file = folder.createFile(blob);
+
+  Logger.log(`✅ Draft saved: ${file.getUrl()}`);
+  return file.getUrl();
+}
+
+
+// === LOAD A SAVED DRAFT FROM DRIVE ===
+function loadDraftById(fileId) {
+  try {
+    const file = DriveApp.getFileById(fileId);
+    const content = file.getBlob().getDataAsString();
+    return content; // JSON string
+  } catch (e) {
+    throw new Error("Unable to load draft: " + e.message);
+  }
+}
+
+// === LIST ALL SAVED DRAFTS (JSON FILES) ===
+function getSavedAgendas() {
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  const files = folder.getFiles();
+  const agendas = [];
+
+  while (files.hasNext()) {
+    const file = files.next();
+    if (file.getMimeType() === MimeType.JSON) {
+      agendas.push({
+        id: file.getId(),
+        name: file.getName()
+      });
+    }
+  }
+  return agendas;
+}
+
+// === SEND AGENDA AS EMAIL ===
+function sendAgenda(htmlContent) {
+  const timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd_HH-mm-ss');
+  const fileName = `Meeting_Agenda_${timestamp}.html`;
+
+  const blob = HtmlService.createHtmlOutput(htmlContent).getBlob().setName(fileName);
+  const folder = DriveApp.getFolderById(FOLDER_ID);
+  folder.createFile(blob);
+
+  MailApp.sendEmail({
+    to: GROUP_EMAIL,
+    subject: 'Meeting Agenda Submission - ' + timestamp,
+    htmlBody: htmlContent
+  });
+
+  Logger.log(`Agenda sent and saved.`);
+}
+
+// === WEB APP ROUTING ===
+function doGet(e) {
+  const page = e && e.parameter.page;
+  const id = e && e.parameter.id;
+
+  if (page === 'viewer') {
+    return HtmlService.createHtmlOutputFromFile('Viewer')
+      .setTitle('Saved Drafts');
+  }
+
+  if (page === 'editor' && id) {
+    const template = HtmlService.createTemplateFromFile('Agenda');
+    template.draftId = id;
+    return template.evaluate().setTitle('Edit Agenda');
+  }
+
+  // Default: new agenda
+  return HtmlService.createHtmlOutputFromFile('Agenda')
+    .setTitle('New Agenda');
+} 
